@@ -3,8 +3,24 @@ sudo: required
 services:
   - docker
 
+# telling travis where to build from
 before_install:
   - docker build -t godwin/docker-react -f Dockerfile.dev .
 
+# telling travis to run tests
 script:
   - docker run -e CI=true godwin/docker-react npm run test
+
+# telling travis where to deploy to
+deploy:
+  provider: elasticbenstalk
+  region: "us-east-2"
+  app: "docker-react"
+  env: "dockerreact-env"
+  bucket_name: "elasticbeanstalk-us-east-2-198833087186"
+  bucket_path: "docker-react"
+  on:
+    branch: master
+  Access_key_id: $AWS_ACCESS_KEY
+  secret_access_key:
+    secure: "$AWS_SECRET_KEY"
